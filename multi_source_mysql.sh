@@ -1,9 +1,16 @@
 #!/bin/bash
-sandbox_name=$HOME/sandboxes/multi_msb_5_7_7
+VERSION=5.7.8
 
-make_multiple_sandbox --how_many_nodes=4 5.7.7
+# ---------------
+DASHED_VERSION=$(echo $VERSION| tr '.' '_')
 
+sandbox_name=$HOME/sandboxes/multi_msb_$DASHED_VERSION
+
+make_multiple_sandbox --how_many_nodes=4 $VERSION
+
+initialdir=$PWD
 cd $sandbox_name
+cp -v $initialdir/test_multi_source_replication.sh $sandbox_name
 
 OPTIONS="master-info-repository=table "
 OPTIONS="$OPTIONS relay-log-info-repository=table"
@@ -31,18 +38,21 @@ then
     ./restart_all
 fi
 
-### $sandbox_name/n4 -e "change master to master_host='127.0.0.1', master_port=5707, master_user='rsandbox', master_password='rsandbox'"
+if [ -n "$ALL_MASTERS" ]
+then
+     $initialdir/all_masters_mysql.sh
+else
 
-for NODE in node1 node2 node3
-do
-    PORT=$($NODE/use -BN -e 'select @@port')
-    CHANGE_MASTER="CHANGE MASTER TO master_host='127.0.0.1', master_port=$PORT, master_user='rsandbox', master_password='rsandbox' for channel '$NODE'"
-    #echo "$CHANGE_MASTER"
-    node4/use -ve "$CHANGE_MASTER"
-    START_SLAVE="start slave for channel '$NODE'"
-    #echo "$START_SLAVE"
-    node4/use -ve "$START_SLAVE"
+    for NODE in node1 node2 node3
+    do
+        PORT=$($NODE/use -BN -e 'select @@port')
+        CHANGE_MASTER="CHANGE MASTER TO master_host='127.0.0.1', master_port=$PORT, master_user='rsandbox', master_password='rsandbox' for channel '$NODE'"
+        #echo "$CHANGE_MASTER"
+        node4/use -ve "$CHANGE_MASTER"
+        START_SLAVE="start slave for channel '$NODE'"
+        #echo "$START_SLAVE"
+        node4/use -ve "$START_SLAVE"
 
-done
-
+    done
+fi
 ### node4/use -ve "START SLAVE"
