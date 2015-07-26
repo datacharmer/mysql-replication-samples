@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "OBSOLETE: use multi_source.sh instead"
+exit
+#
 VERSION=5.7.8
 
 # ---------------
@@ -10,7 +13,6 @@ make_multiple_sandbox --how_many_nodes=4 $VERSION
 
 initialdir=$PWD
 cd $sandbox_name
-cp -v $initialdir/test_multi_source_replication.sh $sandbox_name
 
 OPTIONS="master-info-repository=table "
 OPTIONS="$OPTIONS relay-log-info-repository=table"
@@ -41,6 +43,7 @@ fi
 if [ -n "$ALL_MASTERS" ]
 then
      $initialdir/all_masters_mysql.sh
+     cp -v $initialdir/test_all_masters_replication.sh $sandbox_name
 else
 
     for NODE in node1 node2 node3
@@ -52,7 +55,7 @@ else
         START_SLAVE="start slave for channel '$NODE'"
         #echo "$START_SLAVE"
         node4/use -ve "$START_SLAVE"
-
     done
+    cp -v $initialdir/test_multi_source_replication.sh $sandbox_name
 fi
 ### node4/use -ve "START SLAVE"

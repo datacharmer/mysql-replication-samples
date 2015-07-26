@@ -1,4 +1,6 @@
 #!/bin/bash
+# "OBSOLETE: use multi_source.sh instead"
+# 
 for NODE in node1 node2 node3 node4
 do
     for MASTER in node1 node2 node3 node4
