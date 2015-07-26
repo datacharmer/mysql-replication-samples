@@ -54,15 +54,26 @@ fi
 # ---------------
 DASHED_VERSION=$(echo $VERSION| tr '.' '_')
 
-sandbox_name=$HOME/sandboxes/multi_msb_$DASHED_VERSION
-
-if [ -z "$SKIP_INSTALLATION"]
+if [ -n "$DRYRUN" -o -n "$DRY_RUN" ]
 then
-    make_multiple_sandbox --how_many_nodes=4 $VERSION
+    SKIP_INSTALLATION=1
+    DRYRUN=1
 fi
 
+sandbox_name=$HOME/sandboxes/multi_msb_$DASHED_VERSION
 initialdir=$PWD
-cd $sandbox_name
+if [ -n "$DRYRUN" ]
+then
+    echo "# make_multiple_sandbox --how_many_nodes=4 $VERSION"
+    echo "cd $sandbox_name"
+fi
+
+if [ -z "$SKIP_INSTALLATION" ]
+then
+    make_multiple_sandbox --how_many_nodes=4 $VERSION
+    cd $sandbox_name
+fi
+
 
 function set_GTID
 {
@@ -118,39 +129,69 @@ then
     # ALL-MASTERS
     for NODE in node1 node2 node3 node4
     do
+        echo "# node $NODE"
         for MASTER in node1 node2 node3 node4
         do
             if [ $NODE != $MASTER ]
             then
                 #set -x
-                PORT=$($MASTER/use -BN -e 'select @@port')
+                if [ -n "$DRYRUN" ]
+                then
+                    PORT='$MASTER_PORT'
+                else
+                    PORT=$($MASTER/use -BN -e 'select @@port')
+                fi
                 CHANGE_MASTER=$CHANGE_MASTER_TEMPLATE
                 CHANGE_MASTER=$(echo $CHANGE_MASTER |sed -e "s/_PORT_/$PORT/")
                 CHANGE_MASTER=$(echo $CHANGE_MASTER |sed -e "s/_CHANNEL_/$MASTER/")
-                #echo "#$CHANGE_MASTER#"
-                $NODE/use -ve "$CHANGE_MASTER"
                 START_SLAVE="$START_SLAVE_TEMPLATE '$MASTER'"
-                echo "$START_SLAVE"
-                $NODE/use -ve "$START_SLAVE"
+                #echo "#$CHANGE_MASTER#"
+                #echo "$START_SLAVE"
+                if [ -n "$DRYRUN" ]
+                then
+                    # echo "# $NODE"
+                    echo "$CHANGE_MASTER"
+                    echo "$START_SLAVE"
+                else
+                    $NODE/use -ve "$CHANGE_MASTER"
+                    $NODE/use -ve "$START_SLAVE"
+                fi
                 #set +x
             fi
         done
     done
-    cp -v $initialdir/test_all_masters_replication.sh $sandbox_name
+    if [ -z "$DRYRUN" ]
+    then
+        cp -v $initialdir/test_all_masters_replication.sh $sandbox_name
+    fi
 else
     # FAN-IN
     for NODE in node1 node2 node3
     do
-        PORT=$($NODE/use -BN -e 'select @@port')
+        if [ -n "$DRYRUN" ]
+        then
+            PORT='$MASTER_PORT'
+        else
+            PORT=$($NODE/use -BN -e 'select @@port')
+        fi
         CHANGE_MASTER=$CHANGE_MASTER_TEMPLATE
         CHANGE_MASTER=$(echo $CHANGE_MASTER |sed -e "s/_PORT_/$PORT/")
         CHANGE_MASTER=$(echo $CHANGE_MASTER |sed -e "s/_CHANNEL_/$NODE/")
-        #echo "$CHANGE_MASTER"
-        node4/use -ve "$CHANGE_MASTER"
         START_SLAVE="$START_SLAVE_TEMPLATE '$NODE'"
+        #echo "$CHANGE_MASTER"
         #echo "$START_SLAVE"
-        node4/use -ve "$START_SLAVE"
+        if [ -n "$DRYRUN" ]
+        then
+            echo "# node4"
+            echo "$CHANGE_MASTER"
+        else
+            node4/use -ve "$CHANGE_MASTER"
+            node4/use -ve "$START_SLAVE"
+        fi
     done
-    cp -v $initialdir/test_multi_source_replication.sh $sandbox_name
+    if [ -z "$DRYRUN" ]
+    then
+        cp -v $initialdir/test_multi_source_replication.sh $sandbox_name
+    fi
 fi
 ### node4/use -ve "START SLAVE"
