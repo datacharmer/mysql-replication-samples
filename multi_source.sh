@@ -80,7 +80,8 @@ function set_GTID
     OPTIONS="master-info-repository=table "
     OPTIONS="$OPTIONS relay-log-info-repository=table"
     OPTIONS="$OPTIONS gtid_mode=ON"
-    OPTIONS="$OPTIONS log-slave-updates enforce-gtid-consistency"
+    #OPTIONS="$OPTIONS log-slave-updates"
+    OPTIONS="$OPTIONS enforce-gtid-consistency"
     CHANGED=""
     for NODE in node1 node2 node3 node4
     do
