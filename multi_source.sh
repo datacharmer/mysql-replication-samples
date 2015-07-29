@@ -106,7 +106,7 @@ function set_GTID
 }
 
 CHANGE_MASTER_TEMPLATE=""
-CHANGE_MASTER_TEMPLATE_MYSQL="CHANGE MASTER TO master_host='127.0.0.1', master_port=_PORT_, master_user='rsandbox', master_password='rsandbox' for channel '_CHANNEL_'"
+CHANGE_MASTER_TEMPLATE_MYSQL="CHANGE MASTER TO master_host='127.0.0.1', master_port=_PORT_, master_user='rsandbox', master_password='rsandbox', MASTER_AUTO_POSITION=1 for channel '_CHANNEL_'"
 CHANGE_MASTER_TEMPLATE_MARIADB="CHANGE MASTER '_CHANNEL_' TO master_host='127.0.0.1', master_port=_PORT_, master_user='rsandbox', master_password='rsandbox'"
 START_SLAVE_TEMPLATE_MYSQL="START SLAVE for channel "
 START_SLAVE_TEMPLATE_MARIADB="START SLAVE "
