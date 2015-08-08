@@ -72,6 +72,7 @@ if [ -z "$SKIP_INSTALLATION" ]
 then
     make_multiple_sandbox --how_many_nodes=4 $VERSION
     cd $sandbox_name
+    ./use_all 'reset master'
 fi
 
 
@@ -100,14 +101,13 @@ function set_GTID
     done
     if [ -n "$CHANGED" ]
     then
-        ./use_all 'reset master'
         ./restart_all
     fi
 }
 
 CHANGE_MASTER_TEMPLATE=""
-CHANGE_MASTER_TEMPLATE_MYSQL="CHANGE MASTER TO master_host='127.0.0.1', master_port=_PORT_, master_user='rsandbox', master_password='rsandbox', MASTER_AUTO_POSITION=1 for channel '_CHANNEL_'"
-CHANGE_MASTER_TEMPLATE_MARIADB="CHANGE MASTER '_CHANNEL_' TO master_host='127.0.0.1', master_port=_PORT_, master_user='rsandbox', master_password='rsandbox'"
+CHANGE_MASTER_TEMPLATE_MYSQL="CHANGE MASTER TO MASTER_HOST='127.0.0.1', MASTER_PORT=_PORT_, MASTER_USER='rsandbox', MASTER_PASSWORD='rsandbox', MASTER_AUTO_POSITION=1 for channel '_CHANNEL_'"
+CHANGE_MASTER_TEMPLATE_MARIADB="CHANGE MASTER '_CHANNEL_' TO MASTER_HOST='127.0.0.1', MASTER_PORT=_PORT_, MASTER_USER='rsandbox', MASTER_PASSWORD='rsandbox', MASTER_USE_GTID=current_pos "
 START_SLAVE_TEMPLATE_MYSQL="START SLAVE for channel "
 START_SLAVE_TEMPLATE_MARIADB="START SLAVE "
 if [ $FLAVOR == mysql ]
@@ -121,6 +121,7 @@ then
 else
     CHANGE_MASTER_TEMPLATE=$CHANGE_MASTER_TEMPLATE_MARIADB
     START_SLAVE_TEMPLATE=$START_SLAVE_TEMPLATE_MARIADB
+    ./use_all 'set global gtid_domain_id=@@server_id*10'
 fi
 
 echo "# Setting topology $TOPOLOGY"
