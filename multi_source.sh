@@ -45,7 +45,7 @@ then
     exit 1
 fi
 
-if [ ! -d $SANDBOX_BINARY ]
+if [ ! -d $SANDBOX_BINARY/$VERSION ]
 then
     echo "$SANDBOX_BINARY/$VERSION not found"
     exit 1
