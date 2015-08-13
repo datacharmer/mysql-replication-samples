@@ -10,6 +10,7 @@
 
 VERSION=$1
 FLAVOR=$2
+initialdir=$PWD
 
 case $FLAVOR in
     mysql)
@@ -35,7 +36,7 @@ fi
 
 if [ ! -d $SANDBOX_BINARY/$VERSION ]
 then
-    echo "$SANDBOX_BINARY does not exist"
+    echo "$SANDBOX_BINARY/$VERSION does not exist"
     echo "Set the variable SANDBOX_BINARY to indicate where to find the expanded tarballs for MySQL::Sandbox"
     exit 1
 fi
@@ -146,9 +147,5 @@ do
     ./$NODE/use -e "$START_SLAVE_NODE"
 done
 
-for NODE in  node1 node2 node3 node4 node5
-do
-    ./$NODE/use -e "create table test.table_from_$NODE(id int)"
-done
-./use_all 'show tables from test'
+cp -v $initialdir/test_all_masters_replication.sh $sandbox_name
 
