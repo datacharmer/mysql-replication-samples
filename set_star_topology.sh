@@ -111,8 +111,8 @@ for NODE in ${ENDPOINTS[*]}
 do 
     NODE_PORT=$(get_port ./$NODE/use)
     echo "# node $NODE port: $NODE_PORT" 
-    NODE_CHANNEL=${NODE}_${HUB}
-    HUB_CHANNEL=${HUB}_${NODE}
+    NODE_CHANNEL=hub_${NODE}
+    HUB_CHANNEL=${NODE}_hub
     CHANGE_MASTER_FIXED="master_host='127.0.0.1', master_user='rsandbox', master_password='rsandbox'" 
     case $FLAVOR in 
         mariadb)
@@ -134,16 +134,16 @@ do
             exit 1
             ;;
     esac
-    echo "./$NODE/use -e <$CHANGE_MASTER_NODE_TO_HUB>"
+    echo "./$NODE/use -e \"$CHANGE_MASTER_NODE_TO_HUB\""
     ./$NODE/use -e "$CHANGE_MASTER_NODE_TO_HUB"
 
-    echo "./$HUB/use -e <$CHANGE_MASTER_HUB_TO_NODE>"
+    echo "./$HUB/use -e \"$CHANGE_MASTER_HUB_TO_NODE\""
     ./$HUB/use -e "$CHANGE_MASTER_HUB_TO_NODE"
 
-    echo "./$HUB/use -e <$START_SLAVE_HUB>"
+    echo "./$HUB/use -e \"$START_SLAVE_HUB\""
     ./$HUB/use -e "$START_SLAVE_HUB"
 
-    echo "./$NODE/use -e <$START_SLAVE_NODE>"
+    echo "./$NODE/use -e \"$START_SLAVE_NODE\""
     ./$NODE/use -e "$START_SLAVE_NODE"
 done
 
