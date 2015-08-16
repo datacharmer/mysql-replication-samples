@@ -9,6 +9,11 @@ They are based on [MySQL Sandbox](http://mysqlsandbox.net), with the goal that t
 * multi_source.sh can create bith a FAN-IN or ALL-MASTERS topology using both MySQL 5.7 or MariaDB 10
 * test_multi_source_replication.sh tests the fan-in scenario
 * test_all_masters_replication.sh tests the all_masters scenario
+* common.sh a collection of useful routines
+* set_star_topology.sh Creates a star topology
+* star-change-hub.sh A proof-of-concept script that replaces the hub in a star topology
+* set-hybrid.sh A proof-of-concept script that installs a hybrid topology
+* parallel_replication/* Set of scripts to test parallel replication 
 
 ### VARIABLES
 
@@ -22,3 +27,4 @@ The following variables can change the installation
 * multi_source_mariadb.sh Is the same as the above example, but using MariaDB 10.x syntax
 * all_masters_mysql.sh is a variation of multi_source_mysql.sh, where, instead of having a fan-in slave, all nodes are at once master and slave of every other node.
 * all_masters_mariadb.sh is a variation of multi_source_mmariadb.sh, where, instead of having a fan-in slave, all nodes are at once master and slave of every other node.
+
