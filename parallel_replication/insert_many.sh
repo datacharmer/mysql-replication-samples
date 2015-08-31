@@ -14,8 +14,11 @@ fi
 [ -z "$max_recs" ] && max_recs=1000
 $client -e "drop table if exists $table" $DB
 $client -e "create table $table (i int not null primary key,  ts timestamp) " $DB
+$client -e "insert into test.rollcall values ('$DB', '$table', now(), null)" 
 
 for N in $(seq 1 $max_recs)
 do
     $client -e " insert into $table values ($N,  null) " $DB
 done
+
+$client -e "update test.rollcall  set ended=now() where schema_name = '$DB' and table_name= '$table'" 

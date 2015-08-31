@@ -56,17 +56,19 @@ fi
 DASHED_VERSION=$(echo $VERSION| tr '.' '_')
 sandbox_name=$HOME/sandboxes/rsandbox_$DASHED_VERSION
 make_replication_sandbox $VERSION
-cp -v insert*.sh multi_*.sh $sandbox_name
+cp -v checksum.sh insert*.sh multi_*.sh $sandbox_name
 cd $sandbox_name
 if [ "$FLAVOR" == "mysql" ]
 then
     ./enable_gtid    
 fi
 
-./s1 -e "stop slave"
-./s1 -e "set global $PARALLEL_VAR=$THREADS"
-./s1 -e "start slave"
-./s1 -e "show global variables like '$PARALLEL_VAR'"
-./s1 -e "show processlist"
-
+for SLAVE in s1 s2
+do
+    ./$SLAVE -e "stop slave"
+    ./$SLAVE -e "set global $PARALLEL_VAR=$THREADS"
+    ./$SLAVE -e "start slave"
+    ./$SLAVE -e "show global variables like '$PARALLEL_VAR'"
+    ./$SLAVE -e "show processlist"
+done
 

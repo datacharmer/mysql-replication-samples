@@ -5,6 +5,8 @@ then
     mkdir tmp
 fi
 
+./m -e 'drop table if exists rollcall' test
+./m -e 'create table rollcall( schema_name varchar(50), table_name varchar(50), started datetime, ended datetime, primary key (schema_name, table_name)) ' test
 for D in $(seq 1 10)
 do
     for N in $(seq 1 10)
