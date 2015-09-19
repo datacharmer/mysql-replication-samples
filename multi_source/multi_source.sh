@@ -74,6 +74,7 @@ then
 fi
 
 sandbox_name=$HOME/sandboxes/multi_msb_$DASHED_VERSION
+cd $(dirname $0)
 initialdir=$PWD
 if [ -n "$DRYRUN" ]
 then

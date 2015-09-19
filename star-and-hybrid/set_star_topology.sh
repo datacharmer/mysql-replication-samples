@@ -22,7 +22,9 @@
 
 VERSION=$1
 FLAVOR=$2
+cd $(dirname $0)
 initialdir=$PWD
+
 
 case $FLAVOR in
     mysql)
@@ -58,6 +60,7 @@ sandbox_name=$HOME/sandboxes/multi_msb_$DASHED_VERSION
 
 make_multiple_sandbox --how_many_nodes=5 $VERSION
 
+cp -v ../multi_source/test_all_masters_replication.sh $sandbox_name
 cd $sandbox_name
 ./use_all 'reset master'
 
@@ -158,6 +161,4 @@ do
     echo "./$NODE/use -e \"$START_SLAVE_NODE\""
     ./$NODE/use -e "$START_SLAVE_NODE"
 done
-
-cp -v $initialdir/test_all_masters_replication.sh $sandbox_name
 
