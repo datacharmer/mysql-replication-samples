@@ -8,12 +8,17 @@
 USERNAME=msandbox
 PASSWORD=msandbox
 EXPECTED_MASTER_HOST=127.0.0.1
-EXPECTED_MASTER_PORT=27371
+EXPECTED_MASTER_PORT=13454
 
 SLAVE_HOST=127.0.0.1
-SLAVE_PORT=27372
+SLAVE_PORT=13455
 
-MYSQL="mysql -u $USERNAME -p$PASSWORD "
+tmpcfg=/tmp/my.cfg
+echo '[client]' > $tmpcfg
+echo "user=$USERNAME" >> $tmpcfg
+echo "password=$PASSWORD" >> $tmpcfg
+# MYSQL="mysql -u $USERNAME -p$PASSWORD "
+MYSQL="mysql --defaults-file=$tmpcfg"
 MASTER="$MYSQL -h $EXPECTED_MASTER_HOST -P $EXPECTED_MASTER_PORT"
 SLAVE="$MYSQL -h $SLAVE_HOST -P $SLAVE_PORT"
 
