@@ -21,3 +21,13 @@ The following variables can change the installation for multi_source.sh
 * SKIP_INSTALLATION (Will not install the sandbox, but assume that it is already there)
 * DRYRUN or DRY_RUN (Show the replication commands, but does not execute anything)
 
+### Articles
+
+The following articles cover the material in these samples
+* [MySQL replication monitoring 101](http://datacharmer.blogspot.com/2015/07/mysql-replication-monitoring-101.html)
+* [MySQL replication in action - Part 1: GTID & Co](http://datacharmer.blogspot.com/2015/08/mysql-replication-in-action-part-1-gtid.html)
+* [MySQL replication in action - Part 2 - Fan-in topology](http://datacharmer.blogspot.com/2015/08/mysql-replication-in-action-part-2-fan.html)
+* [MySQL replication in action - Part 3 - All-masters P2P topology](http://datacharmer.blogspot.com/2015/08/mysql-replication-in-action-part-3-all.html)
+* [MySQL replication in action - Part 4 - star and hybrid topologies](http://datacharmer.blogspot.com/2015/08/mysql-replication-in-action-part-4-star.html)
+* [MySQL replication in action - Part 5 - parallel appliers](http://datacharmer.blogspot.com.es/2015/08/mysql-replication-in-action-part-5.html)
+
