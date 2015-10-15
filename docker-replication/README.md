@@ -1,4 +1,4 @@
-## Experiemnts with MySQL and Docker
+## Experiments with MySQL and Docker
 
 ### A simple master-slave deployment
 
