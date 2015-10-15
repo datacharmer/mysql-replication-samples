@@ -1,0 +1,6 @@
+[mysqld]
+user		= mysql
+log_error 	= /var/lib/mysql/my-master-error.log
+log-bin		= mysql-bin
+server-id	= 100
+

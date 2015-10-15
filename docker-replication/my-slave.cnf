@@ -1,0 +1,7 @@
+[mysqld]
+user		= mysql
+log_error 	= /var/lib/mysql/my-slave-error.log
+log-bin		= mysql-bin
+relay-log	= mysql-relay
+server-id	= 200
+

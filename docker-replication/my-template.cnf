@@ -1,0 +1,13 @@
+[mysqld]
+user		= mysql
+port		= 3306
+datadir     = /var/lib/mysql
+basedir     = /usr/
+log_error 	= /var/lib/mysql/error.log
+log-bin		= mysql-bin
+relay-log	= mysql-relay
+server-id	= _SERVERID_
+
+#[mysql]
+#user=root
+#password=secret
