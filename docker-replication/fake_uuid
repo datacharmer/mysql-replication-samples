@@ -1,0 +1,33 @@
+#!/bin/bash
+
+server_id=$1
+sequence=$2
+
+if [ -z "$sequence" ]
+then
+    echo "Syntax: $0 server_id sequence"
+    exit 1
+fi
+
+function number
+{
+    NUMBER=$1
+    wanted=12
+    OUT=''
+    if [[ $NUMBER -gt 99 ]]
+    then
+        printf "%012d" $NUMBER
+        return
+    elif [[ $NUMBER -gt 9 ]]
+    then
+        wanted=$(echo "$wanted/2" | bc)
+    fi
+    for N in $(seq 1 $wanted)
+    do
+        OUT="$OUT$NUMBER"
+    done
+    echo $OUT
+}
+
+printf "%08d-%04d-%04d-%04d-%12s\n" $server_id  0 0 0 $(number $sequence )
+
