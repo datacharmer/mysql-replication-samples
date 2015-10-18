@@ -1,7 +1,18 @@
 #!/bin/bash
 MASTER_NODE=1
-NUM_NODES=$1
-[ -z "$NUM_NODES" ] && NUM_NODES=3
+if [ -f DEPLOYED ]
+then
+    NUM_NODES=$(cat DEPLOYED)
+else
+    echo "# File 'DEPLOYED' not found. Aborting"
+    exit 1
+fi
+
+if [ $NUM_NODES -lt 2 ]
+then
+    echo "# For replication you need more than 1 node. Aborting"
+    exit 1
+fi
 
 MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$MASTER_NODE)
 echo "master: $MASTER_IP"
