@@ -8,6 +8,8 @@ log-bin		= mysql-bin
 relay-log	= mysql-relay
 server-id	= _SERVERID_
 
-#[mysql]
-#user=root
-#password=secret
+master-info-repository=table
+relay-log-info-repository=table
+gtid_mode=ON
+# log-slave-updates 
+enforce-gtid-consistency
