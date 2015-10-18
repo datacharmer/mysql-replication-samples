@@ -12,6 +12,11 @@ then
     NUM_NODES=3
 fi
 
+if [ $NUM_NODES -gt 20 ]
+then
+    echo "# Can't run more than 20 nodes"
+    exit 1
+fi
 
 for NODE in $( seq 1 $NUM_NODES )
 do
@@ -67,9 +72,13 @@ function is_ready
 echo "# Waiting for nodes to be ready"
 
 DELAY=$(($NUM_NODES*2))
-if [[ $DELAY -lt 20 ]]
+if [ $DELAY -lt 20 ]
 then
     DELAY=10
+fi
+if [ $DELAY -gt 40 ]
+then
+    DELAY=40
 fi
 pause $DELAY
 for NODE in $( seq 1 $NUM_NODES )

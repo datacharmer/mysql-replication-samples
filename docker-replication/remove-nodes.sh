@@ -23,6 +23,13 @@ do
     then
         rm -f s$SN
     fi
+    if [ $NODE -gt 3 ]
+    then
+        if [ -d /opt/docker/mysql/node_$NODE ]
+        then
+            sudo rm -rf /opt/docker/mysql/node_$NODE
+        fi
+    fi
 done
 if [ -L m ]
 then
