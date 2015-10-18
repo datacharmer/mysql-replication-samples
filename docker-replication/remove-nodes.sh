@@ -11,6 +11,7 @@ fi
 # set -x
 for NODE in $(seq 1 $NUM_NODES)
 do
+    echo "# Removing node $NODE"
     docker stop mysql-node$NODE
     docker rm mysql-node$NODE
     SN=$(($NODE-1))
