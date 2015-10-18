@@ -55,16 +55,10 @@ done
 function is_ready
 {
     NODE=$1
-    IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$NODE)
-    if [ -z "$IP" ]
-    then
-        echo "## NO IP"
-        return
-    fi
-    PORT=3306
-    MYSQL="mysql -u root -psecret -h $IP -P $PORT"
-    READY=$($MYSQL -BN -e 'select 1')
-    if [ "$READY" == "1" ]
+    MYSQL="docker exec -it mysql-node$NODE mysql --defaults-file=/root/home_my.cnf "
+    # 'docker exec' leaves a trailing newline in the result
+    READY=$($MYSQL -BN -e 'select 12345' | tr -d '\n' | tr -d '\r')
+    if [ "$READY" == "12345" ]
     then
         echo OK
     fi
@@ -115,7 +109,7 @@ do
     #
     # Set username and password in private file
     # Notice that this operation cannot happen before MySQL initialization
-    docker exec -it mysql-node$NODE cp -v /root/home_my.cnf /root/.my.cnf
+    docker exec -it mysql-node$NODE cp /root/home_my.cnf /root/.my.cnf
 done
 
 ./set-replication.sh $NUM_NODES
