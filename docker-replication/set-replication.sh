@@ -6,7 +6,8 @@ NUM_NODES=$1
 MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$MASTER_NODE)
 echo "master: $MASTER_IP"
 MASTER_PORT=3306
-MASTER="mysql -u root -psecret -h $MASTER_IP -P $MASTER_PORT"
+# MASTER="mysql -u root -psecret -h $MASTER_IP -P $MASTER_PORT"
+MASTER="docker exec -it mysql-node1 mysql"
 $MASTER -e 'select @@hostname as MASTER, @@server_id, @@server_uuid'
 
 USER_EXISTS=$($MASTER -BN -e 'select user from mysql.user where user="rdocker"')
@@ -18,8 +19,16 @@ then
     $MASTER -ve 'grant select on performance_schema.global_variables to rdocker'
     $MASTER -ve 'grant select on performance_schema.session_variables to rdocker'
 fi
+
 $MASTER -e 'reset master'
 
+#
+# We either use binlog name and position or reset master + MASTER_AUTO_POSITION
+#
+#MASTER_STATUS=$($MASTER -e 'show master status\G')
+#master_file=$(echo "$MASTER_STATUS" | grep File: | awk '{print $2}')
+#master_pos=$(echo "$MASTER_STATUS" | grep Position: | awk '{print $2}')
+#master_start="MASTER_LOG_FILE='$master_file', MASTER_LOG_POS=$master_pos"
 
 for SLAVE_NODE in $(seq 2 $NUM_NODES)
 do
@@ -27,14 +36,17 @@ do
     echo "slave: $SLAVE_IP"
 
     SLAVE_PORT=3306
-    SLAVE="mysql -u root -psecret -h $SLAVE_IP -P $SLAVE_PORT"
+    # SLAVE="mysql -u root -psecret -h $SLAVE_IP -P $SLAVE_PORT"
+    SLAVE="docker exec -it mysql-node$SLAVE_NODE mysql "
 
     echo "# Setting up replication"
+    $SLAVE -e 'reset master'
     $SLAVE -e "select @@hostname as SLAVE_$SLAVE_NODE, @@server_id, @@server_uuid"
     SLAVE_RUNNING=$($SLAVE -BN -e 'SHOW SLAVE STATUS')
     [ -n "$SLAVE_RUNNING" ] && $SLAVE -ve 'STOP SLAVE'
 
-    $SLAVE -ve "change master to master_host='$MASTER_IP', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker';"
+    $SLAVE -ve "change master to master_host='$MASTER_IP', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker', MASTER_AUTO_POSITION=1"
+    # $SLAVE -ve "change master to master_host='$MASTER_IP', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker', $master_start"
     $SLAVE -ve 'START SLAVE'
     $SLAVE -e 'SHOW SLAVE STATUS\G' | grep 'Running:'
 done
