@@ -121,4 +121,9 @@ do
     docker exec -it mysql-node$NODE cp /root/home_my.cnf /root/.my.cnf
 done
 
-./set-replication.sh $NUM_NODES
+if [ -n "$SKIP_REPLICATION" ]
+then
+    echo "# Skipping replication setup"
+    exit
+fi
+./set-replication.sh

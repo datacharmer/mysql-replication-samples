@@ -15,7 +15,7 @@ then
 fi
 
 MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$MASTER_NODE)
-echo "master: $MASTER_IP"
+echo "master IP: $MASTER_IP"
 MASTER_PORT=3306
 # MASTER="mysql -u root -psecret -h $MASTER_IP -P $MASTER_PORT"
 MASTER="docker exec -it mysql-node1 mysql"
@@ -69,13 +69,21 @@ $MASTER -ve ' create table t1 (i int not null primary key, msg varchar(50), d da
 $MASTER -ve " insert into t1 values (1, 'test1', current_date(), now() + interval 11 second, now());" test
 sleep $NUM_NODES
 
+exit_code=0
 echo "# Retrieving the table from the slaves"
 for SLAVE_NODE in $(seq 2 $NUM_NODES)
 do
-    SLAVE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$SLAVE_NODE)
-    SLAVE_PORT=3306
-    SLAVE="mysql -u root -psecret -h $SLAVE_IP -P $SLAVE_PORT"
+    SLAVE="docker exec -it mysql-node$SLAVE_NODE mysql "
     $SLAVE -e 'select @@hostname, @@server_id, @@server_uuid'
     $SLAVE -e 'select * from test.t1'
+    REPLICATED=$($SLAVE -BN -e 'select count(*) from information_schema.tables where table_schema="test" and table_name="t1"' | tr -d '\n' | tr -d '\r')
+    if [ "$REPLICATED" == "1" ]
+    then
+        echo "OK - Slave $SLAVE_NODE has replicated table t1"
+    else
+        echo "NOT OK - Slave $SLAVE_NODE has NOT replicated table t1"
+        exit_code=1
+    fi 
 done
-
+echo "# Exit code: $exit_code" 
+exit $exit_code
