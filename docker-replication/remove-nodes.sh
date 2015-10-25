@@ -1,5 +1,11 @@
 #!/bin/bash
 
+curdir=$(dirname $0)
+
+. $curdir/common.sh
+
+check_operating_system
+
 if [ -f DEPLOYED ]
 then
     NUM_NODES=$(cat DEPLOYED)
@@ -9,7 +15,7 @@ else
 fi
 
 # set -x
-for NODE in $(seq 1 $NUM_NODES)
+for NODE in $(seq $NUM_NODES 1)
 do
     echo "# Removing node $NODE"
     docker stop mysql-node$NODE
@@ -25,9 +31,9 @@ do
     fi
     if [ $NODE -gt 3 ]
     then
-        if [ -d /opt/docker/mysql/node_$NODE ]
+        if [ -d $DOCKER_DATA/node_$NODE ]
         then
-            sudo rm -rf /opt/docker/mysql/node_$NODE
+            sudo rm -rf $DOCKER_DATA/node_$NODE
         fi
     fi
 done
