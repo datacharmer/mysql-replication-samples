@@ -1,5 +1,22 @@
 #!/bin/bash
 
+export DOCKER_TMP=$HOME/docker/tmp
+export DOCKER_DATA=$HOME/docker/mysql
+export DATA_VOLUME=YES
+
+function check_operating_system
+{
+    OS=$(uname -s)
+    if [ "$OS" == "Linux" ]
+    then
+        DOCKER_TMP=/opt/docker/tmp
+        DOCKER_DATA=/opt/docker/mysql
+    else
+        DATA_VOLUME=no
+    fi
+}
+
+
 function check_docker_version ()
 {
     [ -z "$MIN_DOCKER_VERSION" ] && MIN_DOCKER_VERSION=1.7.0

@@ -63,7 +63,7 @@ do
     echo ""
     echo "# Deploying $MYSQL_IMAGE into container mysql-node$NODE"
     docker run --name mysql-node$NODE  \
-        -v $DOCKER_TMP/my_$NODE.cnf:/etc/my.cnf \
+        -v $DOCKER_TMP/my_$NODE.cnf:/etc/my_second.cnf \
         -v $DOCKER_TMP/home_my_$NODE.cnf:/root/home_my.cnf \
         -e MYSQL_ROOT_PASSWORD=secret $DATA_OPTION \
         -d $MYSQL_IMAGE
@@ -133,7 +133,10 @@ do
     #
     # Set username and password in private file
     # Notice that this operation cannot happen before MySQL initialization
+    echo "# Reconfiguring server in mysql-node$NODE"
     docker exec -it mysql-node$NODE cp /root/home_my.cnf /root/.my.cnf
+    docker exec -it mysql-node$NODE cp /etc/my_second.cnf /etc/my.cnf
+    docker restart mysql-node$NODE 
 done
 
 if [ -n "$SKIP_REPLICATION" ]
