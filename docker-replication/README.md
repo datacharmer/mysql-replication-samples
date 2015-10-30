@@ -1,12 +1,14 @@
 ## Experiments with MySQL and Docker
 
+These examples implement MySQL replication with Docker. Unlike most of the scripts in other directories of this repository, they don't use MySQL-Sandbox, but [Docker](https://www.docker.com/).
+
 ### A simple master-slave deployment
 
-* *mysql-2node-install.sh* Deploys two MySQL nodes, without dedicated storage
-* *set-2node-replication.sh* (invoked by mysql-2node-install.sh) Sets replication between two nodes
-* *remove-2node.sh* Removes the two nodes
-* *my-master.cnf* options file for master node
-* *my-slave.cnf* options file for slave node
+* *simple/mysql-2node-install.sh* Deploys two MySQL nodes, without dedicated storage
+* *simple/set-2node-replication.sh* (invoked by mysql-2node-install.sh) Sets replication between two nodes
+* *simple/remove-2node.sh* Removes the two nodes
+* *simple/my-master.cnf* options file for master node
+* *simple/my-slave.cnf* options file for slave node
 
 ### A multi-node deployment 
 
