@@ -1,0 +1,13 @@
+# Sample my.cnf used to enable GTID
+
+[mysqld]
+user  = mysql
+port  = 3306
+log-bin  = mysql-bin
+relay-log = mysql-relay
+server-id = 12345
+
+master-info-repository=table
+relay-log-info-repository=table
+gtid_mode=ON
+enforce-gtid-consistency
