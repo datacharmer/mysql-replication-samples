@@ -27,11 +27,11 @@ do
     echo "# $NODE"
     if [ -f $DOCKER_TMP/my_$NODE.cnf ]
     then
-        sudo rm $DOCKER_TMP/my_$NODE.cnf
+        rm $DOCKER_TMP/my_$NODE.cnf
     fi
     if [ -f $DOCKER_TMP/home_my_$NODE.cnf ]
     then
-        sudo rm $DOCKER_TMP/home_my_$NODE.cnf
+        rm $DOCKER_TMP/home_my_$NODE.cnf
     fi
     sed "s/_SERVERID_/${NODE}00/" < my-template.cnf > $DOCKER_TMP/my_$NODE.cnf
     cp home_my.cnf $DOCKER_TMP/home_my_$NODE.cnf
@@ -48,7 +48,7 @@ do
     then
         if [ ! -d $DOCKER_DATA ]
         then
-            sudo mkdir -p $DOCKER_DATA
+            mkdir -p $DOCKER_DATA
             sudo chown -R mysql $DOCKER_DATA
             sudo chgrp -R mysql $DOCKER_DATA
         fi
@@ -85,16 +85,7 @@ function is_ready
 
 echo "# Waiting for nodes to be ready"
 
-DELAY=$(($NUM_NODES*2))
-if [ $DELAY -lt 20 ]
-then
-    DELAY=10
-fi
-if [ $DELAY -gt 40 ]
-then
-    DELAY=40
-fi
-pause $DELAY
+pause 10
 for NODE in $( seq 1 $NUM_NODES )
 do
     MAX_ATTEMPTS=30
@@ -111,7 +102,7 @@ do
         fi
         node_ready=$(is_ready $NODE)
         echo "# NODE $NODE - $ATTEMPTS - $node_ready"
-        sleep 1
+        [ "$node_ready" != "OK" ] && sleep 1
     done
     echo ''
 done

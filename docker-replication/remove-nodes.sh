@@ -14,8 +14,7 @@ else
     NUM_NODES=3
 fi
 
-# set -x
-for NODE in $(seq $NUM_NODES 1)
+for NODE in $(seq 1 $NUM_NODES | sort -nr)
 do
     echo "# Removing node $NODE"
     docker stop mysql-node$NODE

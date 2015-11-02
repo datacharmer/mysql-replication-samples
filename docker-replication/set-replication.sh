@@ -8,6 +8,8 @@ else
     exit 1
 fi
 
+. ./common.sh
+
 if [ $NUM_NODES -lt 2 ]
 then
     echo "# For replication you need more than 1 node. Aborting"
@@ -62,12 +64,16 @@ do
     $SLAVE -e 'SHOW SLAVE STATUS\G' | grep 'Running:'
 done
 
+if [ -n "$SKIP_TEST" ]
+then
+    exit
+fi
 echo "# Creating a table in the master"
 $MASTER -e 'create schema if not exists test'
 $MASTER -ve 'drop table if exists test.t1'
 $MASTER -ve ' create table t1 (i int not null primary key, msg varchar(50), d date, t time, dt datetime);' test
 $MASTER -ve " insert into t1 values (1, 'test1', current_date(), now() + interval 11 second, now());" test
-sleep $NUM_NODES
+pause 10
 
 exit_code=0
 echo "# Retrieving the table from the slaves"
