@@ -21,6 +21,15 @@ then
     exit 1
 fi
 
+if [ ! -d $DOCKER_TMP ]
+then
+    mkdir -p $DOCKER_TMP
+fi
+if [ ! -d $DOCKER_DATA ]
+then
+    mkdir -p $DOCKER_DATA
+fi
+
 for NODE in $( seq 1 $NUM_NODES )
 do
     export NODE
