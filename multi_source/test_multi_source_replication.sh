@@ -19,7 +19,13 @@ for NODE in node1 node2 node3
 do
     $NODE/use test -e "drop table if exists test_$NODE"
     $NODE/use test -e "create table test_$NODE( id int not null primary key, serverid int, dbport int, node varchar(100), ts timestamp)"
-    $NODE/use test -e "insert into test_$NODE values (1, @@server_id, @@port, '$NODE', null)"
+    # RECS=$(shuf -i1-20 -n1)
+    RECS=$(($RANDOM%20+1))
+    [ -z "$RECS" ] && RECS=$COUNT
+    for REC in $(seq 1 $RECS)
+    do
+        $NODE/use test -e "insert into test_$NODE values ($REC, @@server_id, @@port, '$NODE', null)"
+    done
     echo -n "# Tables in server "
     $NODE/use -BN -e 'select @@server_id; show tables from test'
     # $NODE/use test -e "select @@server_id, id, serverid,dbport,node,ts from test_$NODE "
@@ -32,6 +38,6 @@ echo "# Tables in fan-in slave"
 ./node4/use  -e "select @@server_id as server_id, @@port, 'fan-in slave' as node"
 for NODE in node1 node2 node3
 do
-    ./node4/use test -e "select * from test_$NODE"
+    ./node4/use test -e "select 'test_$NODE' as table_name, count(*) from test_$NODE"
 done
 

@@ -23,12 +23,20 @@ do
     fi
 done
 
+COUNT=1
 for NODE in ${NODES[*]}
 do
     $NODE/use test -e "drop table if exists test_$NODE"
     $NODE/use test -e "create table test_$NODE( id int not null primary key, serverid int, dbport int, node varchar(100), ts timestamp)"
-    $NODE/use test -e "insert into test_$NODE values (1, @@server_id, @@port, '$NODE', null)"
-    echo "# NODE $NODE created table test_$NODE"
+    # Insert a random number of records
+    RECS=$(shuf -i1-20 -n1)
+    [ -z "$RECS" ] && RECS=$COUNT
+    for REC in $(seq 1 $RECS)
+    do
+        $NODE/use test -e "insert into test_$NODE values ($REC, @@server_id, @@port, '$NODE', null)"
+    done
+    COUNT=$(($COUNT+1))
+    echo "# NODE $NODE created table test_$NODE - inserted $RECS rows"
 done
 
 sleep 3
@@ -38,7 +46,7 @@ do
     $NODE/use -BN -e 'select @@server_id'
     for TABLE_NAME in ${NODES[*]}
     do
-        $NODE/use test -BN -e "select * from test_$TABLE_NAME"
+        $NODE/use test -BN -e "select 'test_$TABLE_NAME' as table_name, count(*) from test_$TABLE_NAME"
     done
 done
 
