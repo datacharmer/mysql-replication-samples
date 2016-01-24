@@ -18,7 +18,7 @@ for NODE in $(seq 1 $NUM_NODES | sort -nr)
 do
     echo "# Removing node $NODE"
     docker stop mysql-node$NODE
-    docker rm mysql-node$NODE
+    docker rm -v  mysql-node$NODE
     SN=$(($NODE-1))
     if [ -x n$NODE ]
     then
