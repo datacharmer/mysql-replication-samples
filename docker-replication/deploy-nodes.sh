@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -z "$MAX_ATTEMPTS" ] && export MAX_ATTEMPTS=30
+
 [ -z "$MIN_DOCKER_VERSION" ] && export MIN_DOCKER_VERSION=1.7.0
 curdir=$(dirname $0)
 
@@ -86,6 +88,7 @@ function is_ready
     MYSQL="docker exec -it mysql-node$NODE mysql --defaults-file=/root/home_my.cnf "
     # 'docker exec' leaves a trailing newline in the result
     READY=$($MYSQL -BN -e 'select 12345' | tr -d '\n' | tr -d '\r')
+    #echo $READY
     if [ "$READY" == "12345" ]
     then
         echo OK
@@ -97,7 +100,6 @@ echo "# Waiting for nodes to be ready"
 pause 10
 for NODE in $( seq 1 $NUM_NODES )
 do
-    MAX_ATTEMPTS=30
     ATTEMPTS=0
     node_ready=''
     echo "# Checking container mysql-node$NODE"
