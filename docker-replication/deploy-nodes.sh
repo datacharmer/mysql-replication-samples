@@ -88,7 +88,6 @@ function is_ready
     MYSQL="docker exec -it mysql-node$NODE mysql --defaults-file=/root/home_my.cnf "
     # 'docker exec' leaves a trailing newline in the result
     READY=$($MYSQL -BN -e 'select 12345' | tr -d '\n' | tr -d '\r')
-    #echo $READY
     if [ "$READY" == "12345" ]
     then
         echo OK
