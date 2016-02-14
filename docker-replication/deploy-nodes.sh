@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -z "$MAX_ATTEMPTS" ] && export MAX_ATTEMPTS=30
+
 [ -z "$MIN_DOCKER_VERSION" ] && export MIN_DOCKER_VERSION=1.7.0
 curdir=$(dirname $0)
 
@@ -97,7 +99,6 @@ echo "# Waiting for nodes to be ready"
 pause 10
 for NODE in $( seq 1 $NUM_NODES )
 do
-    MAX_ATTEMPTS=30
     ATTEMPTS=0
     node_ready=''
     echo "# Checking container mysql-node$NODE"
