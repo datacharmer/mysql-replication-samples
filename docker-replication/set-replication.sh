@@ -29,8 +29,8 @@ then
     echo "# Creating replication user in the master"
     $MASTER -ve 'create user rdocker identified by "rdocker"'
     $MASTER -ve 'grant replication slave on *.* to rdocker'
-    $MASTER -ve 'grant select on performance_schema.global_variables to rdocker'
-    $MASTER -ve 'grant select on performance_schema.session_variables to rdocker'
+    #$MASTER -ve 'grant select on performance_schema.global_variables to rdocker'
+    #$MASTER -ve 'grant select on performance_schema.session_variables to rdocker'
 fi
 
 $MASTER -e 'reset master'
