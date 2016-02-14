@@ -29,7 +29,8 @@ do
     $NODE/use test -e "drop table if exists test_$NODE"
     $NODE/use test -e "create table test_$NODE( id int not null primary key, serverid int, dbport int, node varchar(100), ts timestamp)"
     # Insert a random number of records
-    RECS=$(shuf -i1-20 -n1)
+    RECS=$(($RANDOM%20+1))
+    # RECS=$(shuf -i1-20 -n1)
     [ -z "$RECS" ] && RECS=$COUNT
     for REC in $(seq 1 $RECS)
     do
