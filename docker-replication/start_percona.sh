@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # example of using experimental Percona image with Tokudb
-echo never > never.txt
+echo 'always madwise [never]' > never.txt
 docker run \
     --name mybox  \
     -e MYSQL_ROOT_PASSWORD=secret -d \
