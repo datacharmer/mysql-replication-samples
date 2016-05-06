@@ -5,6 +5,9 @@ log-bin		= mysql-bin
 relay-log	= mysql-relay
 server-id	= _SERVERID_
 
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
 master-info-repository=table
 relay-log-info-repository=table
 gtid_mode=ON
