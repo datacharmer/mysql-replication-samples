@@ -1,11 +1,11 @@
 #!/bin/bash
-NAME=$1
-if [ -n "$NAME" ] 
-then
-    shift
-else
-    NAME=mybox
-fi
+#BOXNAME=$1
+#if [ -n "$BOXNAME" ] 
+#then
+#    shift
+#else
+[ -z "$BOXNAME" ] && BOXNAME=mybox
+#fi
 
 OS=$(uname -s)
 if [ "$OS" == "Linux" ]
@@ -34,8 +34,9 @@ echo "password=$RANDOM_PASSWORD" >> $HOME_MY_SAFE
 
 [ -z "$IMAGE" ] && IMAGE=mysql/mysql-server
 set -x
-docker run --name $NAME \
+docker run --name $BOXNAME  --hostname $BOXNAME \
     -v $SECRETPASSWORD:/root/secretpassword.txt \
-    -v $HOME_MY_SAFE:/root/home_my.cnf \
+    -v $HOME_MY_SAFE:/etc/myuser.cnf \
     -e MYSQL_ROOT_PASSWORD=/root/secretpassword.txt -d $IMAGE $@
 
+#    -v $HOME_MY_SAFE:/root/home_my.cnf \

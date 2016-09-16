@@ -2,5 +2,4 @@
 [mysqld]
 user=mysql
 log-bin		= mysql-bin
-# log-bin-index		= /tmp/mysql-extra-bin.index
 server-id	= 100

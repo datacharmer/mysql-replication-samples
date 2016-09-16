@@ -2,7 +2,7 @@
 
 [ -z "$MAX_ATTEMPTS" ] && export MAX_ATTEMPTS=30
 
-[ -z "$MIN_DOCKER_VERSION" ] && export MIN_DOCKER_VERSION=1.7.0
+[ -z "$MIN_DOCKER_VERSION" ] && export MIN_DOCKER_VERSION=1.11.0
 curdir=$(dirname $0)
 
 . $curdir/common.sh
@@ -10,6 +10,7 @@ curdir=$(dirname $0)
 
 check_docker_version
 check_operating_system
+create_network 
 
 NUM_NODES=$1
 if [ -z "$NUM_NODES" ]
@@ -73,7 +74,9 @@ do
     fi
     echo ""
     echo "# Deploying $MYSQL_IMAGE into container mysql-node$NODE"
-    docker run --name mysql-node$NODE  \
+    docker run --net $NETWORK_NAME \
+        --name mysql-node$NODE  \
+        --hostname $NAME \
         -v $DOCKER_TMP/my_$NODE.cnf:/etc/my.cnf \
         -v $DOCKER_TMP/home_my_$NODE.cnf:/root/home_my.cnf \
         -e MYSQL_ROOT_PASSWORD=secret $DATA_OPTION \
@@ -142,4 +145,13 @@ then
     echo "# Skipping replication setup"
     exit
 fi
-./set-replication.sh
+
+[ -z "$TOPOLOGY" ] && TOPOLOGY=simple
+
+if [ ! ./set-replication-$TOPOLOGY.sh ]
+then
+    echo " file ./set-replication-$TOPOLOGY.sh not found"
+    exit 1
+fi
+
+./set-replication-$TOPOLOGY.sh

@@ -16,12 +16,9 @@ then
     exit 1
 fi
 
-MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$MASTER_NODE)
-echo "master IP: $MASTER_IP"
 MASTER_PORT=3306
-# MASTER="mysql -u root -psecret -h $MASTER_IP -P $MASTER_PORT"
 MASTER="docker exec -it mysql-node1 mysql"
-$MASTER -e 'select @@hostname as MASTER, @@server_id, @@server_uuid'
+$MASTER -e 'select @@hostname as MASTER, @@server_id, @@server_uuid, @@version'
 
 USER_EXISTS=$($MASTER -BN -e 'select user from mysql.user where user="rdocker"')
 if [ -z "$USER_EXISTS" ] 
@@ -45,22 +42,19 @@ $MASTER -e 'reset master'
 
 for SLAVE_NODE in $(seq 2 $NUM_NODES)
 do
-    SLAVE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress}}'  mysql-node$SLAVE_NODE)
-    echo "slave: $SLAVE_IP"
 
     SLAVE_PORT=3306
-    # SLAVE="mysql -u root -psecret -h $SLAVE_IP -P $SLAVE_PORT"
     SLAVE="docker exec -it mysql-node$SLAVE_NODE mysql "
 
     echo "# Setting up replication"
     $SLAVE -e 'reset master'
-    $SLAVE -e "select @@hostname as SLAVE_$SLAVE_NODE, @@server_id, @@server_uuid"
+    $SLAVE -e "select @@hostname as SLAVE_$SLAVE_NODE, @@server_id, @@server_uuid, @@version"
     SLAVE_RUNNING=$($SLAVE -BN -e 'SHOW SLAVE STATUS')
     [ -n "$SLAVE_RUNNING" ] && $SLAVE -ve 'STOP SLAVE'
 
-    $SLAVE -ve "change master to master_host='$MASTER_IP', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker', MASTER_AUTO_POSITION=1"
-    # $SLAVE -ve "change master to master_host='$MASTER_IP', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker', $master_start"
-    $SLAVE -ve 'START SLAVE'
+    #$SLAVE -ve "change master to master_host='mysql-node1', master_port=$MASTER_PORT, master_user='rdocker', master_password='rdocker', MASTER_AUTO_POSITION=1"
+    $SLAVE -ve "change master to master_host='mysql-node1', master_port=$MASTER_PORT,  MASTER_AUTO_POSITION=1"
+    $SLAVE -ve 'START SLAVE user="rdocker" password="rdocker" '
     $SLAVE -e 'SHOW SLAVE STATUS\G' | grep 'Running:'
 done
 

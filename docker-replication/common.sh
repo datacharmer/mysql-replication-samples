@@ -3,6 +3,7 @@
 export DOCKER_TMP=$HOME/docker/tmp
 export DOCKER_DATA=$HOME/docker/mysql
 export DATA_VOLUME=YES
+export NETWORK_NAME=my_rep_net
 
 function check_operating_system
 {
@@ -31,9 +32,21 @@ function normalized_version
     printf "%02d.%02d.%02d" $V1 $V2 $V3
 }
 
-function check_docker_version ()
+function create_network
 {
-    [ -z "$MIN_DOCKER_VERSION" ] && MIN_DOCKER_VERSION=1.7.0
+    exist_network=$(docker network ls | grep $NETWORK_NAME)
+    if [ -n "$exist_network" ]
+    then
+        echo "# network $NETWORK_NAME already exists"
+    else
+        docker network create $NETWORK_NAME
+    fi
+    docker network ls
+}
+
+function check_docker_version 
+{
+    [ -z "$MIN_DOCKER_VERSION" ] && MIN_DOCKER_VERSION=1.11.0
     DOCKER_VERSION=$(docker --version | perl -lne 'print $1 if /(\d+\.\d+\.\d+)/')
     DOCKER_NORMALIZED_VERSION=$(normalized_version $DOCKER_VERSION)
     MIN_DOCKER_NORMALIZED_VERSION=$(normalized_version $MIN_DOCKER_VERSION)
