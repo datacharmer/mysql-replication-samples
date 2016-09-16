@@ -17,7 +17,6 @@
 # Simple example of how to set semi-synchronous replication
 
 VERSION=$1
-initialdir=$PWD
 
 if [ -z "$VERSION" ]
 then
@@ -37,8 +36,17 @@ fi
 
 DASHED_VERSION=$(echo $VERSION| tr '.' '_')
 sandbox_name=$HOME/sandboxes/rsandbox_$DASHED_VERSION
+#
+#make_replication_sandbox $VERSION
+#sbtool -o plugin --plugin=semisynch -s $sandbox_name
 
-make_replication_sandbox $VERSION
-
-sbtool -o plugin --plugin=semisynch -s $sandbox_name
-
+M_OPTIONS="-c plugin-load=rpl_semi_sync_master=semisync_master.so"
+M_OPTIONS="$M_OPTIONS --post_grants_sql='set global rpl_semi_sync_master_enabled=1'"
+S_OPTIONS="-c plugin-load=rpl_semi_sync_slave=semisync_slave.so"
+S_OPTIONS="$S_OPTIONS -c rpl_semi_sync_slave_enabled=1"
+make_replication_sandbox --gtid --master_options="$M_OPTIONS" --slave_options="$S_OPTIONS" $VERSION
+sleep 3
+$sandbox_name/m -e 'show variables like "%rpl%"'
+$sandbox_name/m -e 'show status like "%rpl%"'
+$sandbox_name/s1 -e 'show variables like "%rpl%"'
+$sandbox_name/s2 -e 'show variables like "%rpl%"'
