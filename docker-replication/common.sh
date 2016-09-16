@@ -13,13 +13,7 @@ function check_operating_system
         DOCKER_TMP=/opt/docker/tmp
         DOCKER_DATA=/opt/docker/mysql
     else
-        if [ -n "$SKIP_VOLUME" ]
-        then
-            DATA_VOLUME=no
-        else
-            DOCKER_TMP=$HOME/docker/tmp
-            DOCKER_DATA=$HOME/docker/mysql
-        fi
+        DATA_VOLUME=no
     fi
 }
 
