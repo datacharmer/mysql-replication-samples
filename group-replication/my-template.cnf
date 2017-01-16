@@ -1,0 +1,22 @@
+[mysqld]
+user=mysql
+server_id=_SERVER_ID_
+gtid_mode=ON
+enforce_gtid_consistency=ON
+master_info_repository=TABLE
+relay_log_info_repository=TABLE
+binlog_checksum=NONE
+log_slave_updates=ON
+log_bin=mysql-bin
+relay-log=relay
+binlog_format=ROW
+log-error=mysqld.err
+
+transaction_write_set_extraction=XXHASH64
+loose-group_replication_group_name="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+loose-group_replication_start_on_boot=off
+loose-group_replication_local_address= "172.19.0._IP_END_:6606"
+loose-group_replication_group_seeds= "172.19.0.2:6606,172.19.0.3:6606,172.19.0.4:6606"
+loose-group_replication_ip_whitelist="172.19.0.2,172.19.0.3,172.19.0.4,127.0.0.1"
+loose-group_replication_bootstrap_group= off
+
