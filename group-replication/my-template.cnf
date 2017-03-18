@@ -15,8 +15,8 @@ log-error=mysqld.err
 transaction_write_set_extraction=XXHASH64
 loose-group_replication_group_name="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 loose-group_replication_start_on_boot=off
-loose-group_replication_local_address= "172.18.0._IP_END_:6606"
-loose-group_replication_group_seeds= "172.18.0.2:6606,172.18.0.3:6606,172.18.0.4:6606"
-loose-group_replication_ip_whitelist="172.18.0.2,172.18.0.3,172.18.0.4,127.0.0.1"
+loose-group_replication_local_address= "_BASE_IP_._IP_END_:6606"
+loose-group_replication_group_seeds= "_BASE_IP_.2:6606,_BASE_IP_.3:6606,_BASE_IP_.4:6606"
+loose-group_replication_ip_whitelist="_BASE_IP_.2,_BASE_IP_.3,_BASE_IP_.4,127.0.0.1"
 loose-group_replication_bootstrap_group= off
 
